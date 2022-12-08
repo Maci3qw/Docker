@@ -1,0 +1,60 @@
+version: '3.1'
+
+services:
+
+  wordpress:
+    image: wordpress
+    container_name: wordpress
+    restart: always
+    ports:
+      - 8081:80
+    environment:
+     - WORDPRESS_DB_HOST=${DB_HOSTNAME}
+     - WORDPRESS_DB_USER=admin
+     - WORDPRESS_DB_PASSWORD=admin
+     - WORDPRESS_DB_NAME=base
+      
+    volumes:
+      - base-volume:/var/www/html
+    networks:
+      - base-network
+
+  database:
+    image: mariadb:latest
+    hostname: ${DB_HOSTNAME}
+    restart: always
+    container_name: base
+    ports: ["3309:3306"]
+    environment:
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    networks:
+      - base-network
+    volumes:
+      - base-volume:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      - PMA_ARBITRARY=1
+    networks:
+      - base-network
+
+
+
+    
+
+
+
+volumes:
+  base-volume:
+
+networks:
+      base-network:
+       driver: bridge
